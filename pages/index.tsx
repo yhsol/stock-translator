@@ -1,41 +1,19 @@
 import React from "react";
+import { AnswerArea, QuestionArea } from "@/components/QuestionAnswer";
+import { getDataFromDart, sendRequestToGPT } from "@/lib/api";
 
 export default function Home() {
   const [prompt, setPrompt] = React.useState<string>("");
-  const [results, setResults] = React.useState<{ q: string; a: string }[]>([]);
+  const [results, setResults] = React.useState<
+    { question: string; answer: string }[]
+  >([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [dartData, setDartData] = React.useState<string>("");
 
   const resultsEndRef = React.useRef<HTMLDivElement>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrompt(e.target.value);
-  };
-
-  const requestAnalaze = async () => {
-    if (!prompt) {
-      return;
-    }
-
-    setLoading(true);
-    const currentPrompt = prompt;
-    setPrompt("");
-
-    const response = await fetch("/api/hello", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ prompt: currentPrompt }),
-    });
-
-    const data = await response.json();
-
-    setResults([
-      ...results,
-      { q: currentPrompt, a: data.result || "No answer found" },
-    ]);
-
-    setLoading(false);
   };
 
   const scrollToBottom = () => {
@@ -44,106 +22,69 @@ export default function Home() {
     }
   };
 
+  const requestHandler = async (directPrompt?: string) => {
+    if (!prompt || !directPrompt) {
+      return;
+    }
+
+    setLoading(true);
+    const currentPrompt = prompt || directPrompt;
+    directPrompt && setPrompt("");
+
+    const answer = await sendRequestToGPT(currentPrompt);
+    setResults([...results, { question: currentPrompt, answer: answer }]);
+
+    setLoading(false);
+  };
+
   React.useEffect(() => {
     scrollToBottom();
   }, [results]);
+
+  React.useEffect(() => {
+    if (dartData) {
+      setPrompt(`
+      ${dartData}
+      주식 투자 전문가로서 이 데이터를 분석해서 보고서를 작성해줘. 마지막엔 표로 정리해줘.
+      `);
+    }
+  }, [dartData]);
 
   return (
     <div className="pb-14 flex flex-col h-screen bg-gray-800 text-white">
       <div className="overflow-scroll flex-grow mb-4 relative">
         {results.length > 0 &&
-          results.map(({ q, a }) => (
+          results.map(({ question, answer }) => (
             <AnswerArea
-              key={`${q.substring(0, 10)}-${a.substring(0, 10)}`}
-              question={q}
-              answer={a}
+              key={`${question.substring(0, 10)}-${answer.substring(0, 10)}`}
+              question={question}
+              answer={answer}
             />
           ))}
         <div ref={resultsEndRef} />
+      </div>
+      <div>
+        <div>dart test</div>
+        <button
+          onClick={async () => {
+            const data = await getDataFromDart({
+              category: "hyslrSttus",
+              corp_code: "00126380",
+              bsns_year: "2019",
+              reprt_code: "11011",
+            });
+            setDartData(JSON.stringify(data?.list));
+          }}
+        >
+          send
+        </button>
       </div>
       <QuestionArea
         loading={loading}
         prompt={prompt}
         handleInput={handleInput}
-        requestAnalaze={requestAnalaze}
+        requestHandler={requestHandler}
       />
-    </div>
-  );
-}
-
-function AnswerArea({
-  question,
-  answer,
-}: {
-  question: string;
-  answer: string;
-}) {
-  return (
-    <>
-      <div className="bg-gray-700 text-white p-5">
-        <div className="text-gray-400">question </div>
-        <div>{question}</div>
-      </div>
-      <div className="bg-gray-600 text-gray-200 p-5">
-        <div className="text-gray-400">answer</div>
-        <div>{answer}</div>
-      </div>
-    </>
-  );
-}
-
-function QuestionArea({
-  loading,
-  prompt,
-  handleInput,
-  requestAnalaze,
-}: {
-  loading: boolean;
-  prompt: string;
-  handleInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  requestAnalaze: () => void;
-}) {
-  return (
-    <div
-      className="flex justify-between items-center space-x-4 mb-4 
-        fixed bottom-0 left-4 right-4"
-    >
-      <div className="relative w-full">
-        <input
-          className="bg-gray-700 rounded-md p-2 w-full text-white placeholder-gray-400 focus:outline-none"
-          value={prompt}
-          onChange={handleInput}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              requestAnalaze();
-            }
-          }}
-          placeholder={loading ? "" : "Send a message..."}
-          disabled={loading}
-        />
-        {loading && (
-          <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-            <ThreeDotsLoader />
-          </div>
-        )}
-      </div>
-      <button
-        onClick={requestAnalaze}
-        className="bg-pink-500 text-white rounded-md p-2"
-        disabled={loading}
-      >
-        Send
-      </button>
-    </div>
-  );
-}
-
-function ThreeDotsLoader() {
-  return (
-    <div className="flex space-x-2">
-      <div className="bg-pink-500 h-1 w-1 rounded-full animate-bounce-big-1"></div>
-      <div className="bg-pink-500 h-1 w-1 rounded-full animate-bounce-big-2 delay-300"></div>
-      <div className="bg-pink-500 h-1 w-1 rounded-full animate-bounce-big-3 delay-700"></div>
     </div>
   );
 }
