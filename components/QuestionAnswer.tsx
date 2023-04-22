@@ -1,3 +1,4 @@
+import { QuestionAnswer } from "@/pages";
 import { ThreeDotsLoader } from "./ThreeDotsLoader";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -48,23 +49,22 @@ export function QuestionArea({
   );
 }
 
-export function AnswerArea({
-  question,
-  answer,
-}: {
-  question: string;
-  answer: string;
-}) {
+export function AnswerArea({ results }: { results: QuestionAnswer[] }) {
   return (
-    <>
-      <div className="bg-gray-700 text-white p-5">
-        <div className="text-gray-400">question </div>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} children={question} />
-      </div>
-      <div className="bg-gray-600 text-gray-200 p-5">
-        <div className="text-gray-400">answer</div>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} children={answer} />
-      </div>
-    </>
+    <div className="overflow-scroll flex-grow mb-4 relative">
+      {results.length > 0 &&
+        results.map(({ question, answer }) => (
+          <>
+            <div className="bg-gray-700 text-white p-5">
+              <div className="text-gray-400">question </div>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} children={question} />
+            </div>
+            <div className="bg-gray-600 text-gray-200 p-5">
+              <div className="text-gray-400">answer</div>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} children={answer} />
+            </div>
+          </>
+        ))}
+    </div>
   );
 }

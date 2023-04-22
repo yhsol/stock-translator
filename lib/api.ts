@@ -1,7 +1,7 @@
 import { DartQueryParams } from "@/pages/api/dart";
 import axios from "axios";
 
-export const sendRequestToGPT = async (prompt: string): Promise<string> => {
+export const sendChatToGPT = async (prompt: string): Promise<string> => {
   try {
     const response = await axios.post(
       "/api/chat",
@@ -17,7 +17,7 @@ export const sendRequestToGPT = async (prompt: string): Promise<string> => {
   }
 };
 
-export const getDataFromDart = async (params: DartQueryParams) => {
+export const getDartData = async (params: DartQueryParams) => {
   try {
     const response = await axios.get("/api/dart", { params });
     return response.data || "No data found";
