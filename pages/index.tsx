@@ -49,7 +49,7 @@ export default function Home() {
   }, [results]);
 
   return (
-    <div className="pb-14 flex flex-col h-screen">
+    <div className="pb-14 flex flex-col h-screen bg-gray-800 text-white">
       <div className="overflow-scroll flex-grow mb-4 relative">
         {results.length > 0 &&
           results.map(({ q, a }) => (
@@ -84,7 +84,7 @@ function AnswerArea({
         <div className="text-gray-400">question </div>
         <div>{question}</div>
       </div>
-      <div className="bg-gray-500 text-gray-200 p-5">
+      <div className="bg-gray-600 text-gray-200 p-5">
         <div className="text-gray-400">answer</div>
         <div>{answer}</div>
       </div>
@@ -110,7 +110,7 @@ function QuestionArea({
     >
       <div className="relative w-full">
         <input
-          className="bg-gray-200 rounded-md p-2 w-full"
+          className="bg-gray-700 rounded-md p-2 w-full text-white placeholder-gray-400 focus:outline-none"
           value={prompt}
           onChange={handleInput}
           onKeyDown={(e) => {
@@ -118,7 +118,7 @@ function QuestionArea({
               requestAnalaze();
             }
           }}
-          placeholder={loading ? "" : "Type your prompt here"}
+          placeholder={loading ? "" : "Send a message..."}
           disabled={loading}
         />
         {loading && (
@@ -129,7 +129,7 @@ function QuestionArea({
       </div>
       <button
         onClick={requestAnalaze}
-        className="bg-blue-500 text-white rounded-md p-2"
+        className="bg-pink-500 text-white rounded-md p-2"
         disabled={loading}
       >
         Send
