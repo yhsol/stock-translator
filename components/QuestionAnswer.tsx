@@ -57,11 +57,17 @@ export function AnswerArea({ results }: { results: QuestionAnswer[] }) {
           <>
             <div className="bg-gray-700 text-white p-5">
               <div className="text-gray-400">question </div>
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={question} />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {question}
+              </ReactMarkdown>
             </div>
             <div className="bg-gray-600 text-gray-200 p-5">
               <div className="text-gray-400">answer</div>
-              <ReactMarkdown remarkPlugins={[remarkGfm]} children={answer} />
+              <div>
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {answer}
+                </ReactMarkdown>
+              </div>
             </div>
           </>
         ))}
