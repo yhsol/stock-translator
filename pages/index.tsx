@@ -1,7 +1,7 @@
-import React from "react";
 import { AnswerArea, QuestionArea } from "@/components/QuestionAnswer";
-import { getDartData, sendChatToGPT as chatToGPT } from "@/lib/api";
+import { sendChatToGPT as chatToGPT, getDartData } from "@/lib/api";
 import { stock_traslate_prompt_eng } from "@/lib/constants";
+import React from "react";
 
 const CATEGORIES = [
   {
@@ -95,6 +95,13 @@ export default function Home() {
           onClick={dartHandler}
         >
           다트 정보 가져오기
+        </button>
+
+        <button
+          className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-4 mb-4"
+          onClick={() => console.log("대답이 잘렸을 경우 이어서 대답")}
+        >
+          이어서 해줘.
         </button>
       </div>
 
